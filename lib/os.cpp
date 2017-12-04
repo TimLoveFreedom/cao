@@ -16,7 +16,7 @@
 
 
 struct stat info;
-typedef stat Stat;
+typedef struct stat Stat;
 
 using namespace std;
 
@@ -222,5 +222,5 @@ int cao::os::do_mkdir(char *path, mode_t mode) {
  * @param path
  */
 int cao::os::makedirs(char *path, mode_t mode) {
-
+    return 0;
 }

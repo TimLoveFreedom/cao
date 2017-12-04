@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "sysstat.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
