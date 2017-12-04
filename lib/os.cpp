@@ -58,7 +58,7 @@ bool cao::os::isfile(char *path) {
     }
 }
 
-vector<string> cao::os::list_files(char *path) {
+vector<string> cao::os::list_files(char *path, bool full_path) {
     DIR *dp;
     struct dirent *dirP;
     vector<string> files;
@@ -68,7 +68,11 @@ vector<string> cao::os::list_files(char *path) {
 
     while ((dirP = readdir(dp)) != NULL) {
         if (dirP->d_type == DT_REG) {
-            files.push_back(path + string("/") + string(dirP->d_name));
+            if (full_path) {
+                files.push_back(path + string("/") + string(dirP->d_name));
+            } else {
+                files.push_back(string(dirP->d_name));
+            }
         }
     }
 
@@ -76,7 +80,7 @@ vector<string> cao::os::list_files(char *path) {
     return files;
 }
 
-vector<string> cao::os::list_dirs(char *path) {
+vector<string> cao::os::list_dirs(char *path, bool full_path) {
     DIR *dp;
     struct dirent *dirP;
     vector<string> files;
@@ -86,7 +90,11 @@ vector<string> cao::os::list_dirs(char *path) {
 
     while ((dirP = readdir(dp)) != NULL) {
         if (dirP->d_type == DT_DIR) {
-            files.push_back(path + string("/") + string(dirP->d_name));
+            if (full_path) {
+                files.push_back(path + string("/") + string(dirP->d_name));
+            } else {
+                files.push_back(string(dirP->d_name));
+            }
         }
     }
 
@@ -100,7 +108,7 @@ vector<string> cao::os::list_dirs(char *path) {
  * @param path
  * @return
  */
-vector<string> cao::os::list_all(char *path) {
+vector<string> cao::os::list_all(char *path, bool full_path) {
     DIR *dp;
     struct dirent *dirP;
     vector<string> files;
@@ -109,8 +117,18 @@ vector<string> cao::os::list_all(char *path) {
     }
 
     while ((dirP = readdir(dp)) != NULL) {
-        if (dirP->d_type == DT_REG || dirP->d_type == DT_DIR) {
-            files.push_back(path + string("/") + string(dirP->d_name));
+        if (dirP->d_type == DT_REG) {
+            if (full_path) {
+                files.push_back(path + string("/") + string(dirP->d_name));
+            } else {
+                files.push_back(string(dirP->d_name));
+            }
+        } else if (dirP->d_type == DT_DIR) {
+            if (full_path) {
+                files.push_back(path + string("/") + string(dirP->d_name));
+            } else {
+                files.push_back(string(dirP->d_name));
+            }
         }
     }
 
@@ -159,12 +177,12 @@ string cao::os::parent_path(char *path) {
 #ifdef __APPLE__
     joiner = "/";
 #endif
-    Log("get parent path, this is original " + (string) path);
+//    Log("get parent path, this is original " + (string) path);
     vector<string> split_r;
     cao::str_util::SplitString(path, split_r, joiner);
     vector<string> split_drop_file_name(split_r.begin(), split_r.end() - 1);
     string dir = cao::str_util::JoinString(joiner, split_drop_file_name);
-    LogInfo("to see is the parent path is right. " + dir);
+//    LogInfo("to see is the parent path is right. " + dir);
     return dir;
 }
 
@@ -177,23 +195,34 @@ string cao::os::parent_path(char *path) {
 string cao::os::filename(char *path) {
     string path_str = path;
     if (cao::os::exists(path)) {
-        if (path_str.find("/")) {
-            // this is a path from unix
-            vector<string> split_r;
-            cao::str_util::SplitString(path_str, split_r, "/");
-            return split_r[split_r.size() - 1];
-
-        } else if (path_str.find("\\")) {
-            // this is path from windows
-            vector<string> split_r;
-            cao::str_util::SplitString(path_str, split_r, "\\");
-            return split_r[split_r.size() - 1];
-        } else {
-            // this is exactly a file
+        if (cao::os::isdir(path)) {
+            // if dir, return directly
             return path_str;
+        } else {
+            string joiner ("/");
+            string joiner_win ("\\");
+
+            std::size_t found = path_str.find(joiner);
+            std::size_t found_win = path_str.find(joiner_win);
+
+            if (found != std::string::npos) {
+                // this is a path from unix
+                vector<string> split_r;
+                cao::str_util::SplitString(path_str, split_r, joiner);
+                return split_r[split_r.size() - 1];
+            } else if (found_win != std::string::npos) {
+                // this is path from windows
+                vector<string> split_r;
+                cao::str_util::SplitString(path_str, split_r, joiner_win);
+                return split_r[split_r.size() - 1];
+            } else {
+                // this is exactly a file
+                return path_str;
+            }
         }
     } else {
         LogFatal("can not found path or file: " + path_str);
+        return "";
     }
 }
 

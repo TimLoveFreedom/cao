@@ -21,9 +21,9 @@ namespace cao{
         bool isdir(char *path);
         bool isfile(char *path);
 
-        vector<string> list_files(char *path);
-        vector<string> list_dirs(char *path);
-        vector<string> list_all(char *path);
+        vector<string> list_files(char *path, bool full_path);
+        vector<string> list_dirs(char *path, bool full_path);
+        vector<string> list_all(char *path, bool full_path);
 
         string join(char *path, string filename);
 
