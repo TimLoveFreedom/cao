@@ -9,6 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "sysstat.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+
 using namespace std;
 
 namespace cao{
@@ -27,8 +31,8 @@ namespace cao{
         string parent_path(char *path);
         string filename(char *path);
 
-        void mkdir(char *path);
-        void makedirs(char *path);
+        int do_mkdir(char *path, mode_t mode);
+        int makedirs(char *path, mode_t mode);
 
         string abs_path(char *path);
     }

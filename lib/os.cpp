@@ -3,8 +3,6 @@
 //
 // this library provider some function to
 // judge a directory is exist or not
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -18,6 +16,8 @@
 
 
 struct stat info;
+typedef stat Stat;
+
 using namespace std;
 
 bool cao::os::exists(char *path) {
@@ -85,7 +85,7 @@ vector<string> cao::os::list_dirs(char *path) {
     }
 
     while ((dirP = readdir(dp)) != NULL) {
-        if (dirP->d_type == DT_REG) {
+        if (dirP->d_type == DT_DIR) {
             files.push_back(path + string("/") + string(dirP->d_name));
         }
     }
@@ -109,7 +109,7 @@ vector<string> cao::os::list_all(char *path) {
     }
 
     while ((dirP = readdir(dp)) != NULL) {
-        if (dirP->d_type == DT_REG) {
+        if (dirP->d_type == DT_REG || dirP->d_type == DT_DIR) {
             files.push_back(path + string("/") + string(dirP->d_name));
         }
     }
@@ -174,8 +174,27 @@ string cao::os::parent_path(char *path) {
  * @param path
  * @return
  */
-string cao::os::filename(char *path){
-    return "";
+string cao::os::filename(char *path) {
+    string path_str = path;
+    if (cao::os::exists(path)) {
+        if (path_str.find("/")) {
+            // this is a path from unix
+            vector<string> split_r;
+            cao::str_util::SplitString(path_str, split_r, "/");
+            return split_r[split_r.size() - 1];
+
+        } else if (path_str.find("\\")) {
+            // this is path from windows
+            vector<string> split_r;
+            cao::str_util::SplitString(path_str, split_r, "\\");
+            return split_r[split_r.size() - 1];
+        } else {
+            // this is exactly a file
+            return path_str;
+        }
+    } else {
+        LogFatal("can not found path or file: " + path_str);
+    }
 }
 
 
@@ -183,14 +202,25 @@ string cao::os::filename(char *path){
  * this method will create a folder
  * @param path
  */
-void cao::os::mkdir(char *path) {
+int cao::os::do_mkdir(char *path, mode_t mode) {
 
+    Stat st;
+    int status = 0;
+    if (stat(path, &st) != 0) {
+        /* Directory does not exist. EEXIST for race condition */
+        if (mkdir(path, mode) != 0 && errno != EEXIST)
+            status = -1;
+    } else if (!S_ISDIR(st.st_mode)) {
+        errno = ENOTDIR;
+        status = -1;
+    }
+    return status;
 }
 
 /**
  * this method will create a folder recursive
  * @param path
  */
-void cao::os::makedirs(char *path) {
+int cao::os::makedirs(char *path, mode_t mode) {
 
 }
