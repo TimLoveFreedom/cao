@@ -1,0 +1,3 @@
+Name: cao
+Description: The cao library - Cpp Assist Oar
+Version: 1.0.1
