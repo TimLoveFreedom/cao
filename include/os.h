@@ -20,6 +20,8 @@ namespace cao{
 
         vector<string> list_files(char *path);
         vector<string> list_dirs(char *path);
+        vector<string> list_all(char *path);
+
         string join(char *path, string filename);
 
         string parent_path(char *path);

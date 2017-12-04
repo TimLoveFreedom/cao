@@ -94,6 +94,30 @@ vector<string> cao::os::list_dirs(char *path) {
     return files;
 }
 
+
+/**
+ * list all files contains file and folders
+ * @param path
+ * @return
+ */
+vector<string> cao::os::list_all(char *path) {
+    DIR *dp;
+    struct dirent *dirP;
+    vector<string> files;
+    if ((dp = opendir(path)) == NULL) {
+        cout << "dir not exist." << endl;
+    }
+
+    while ((dirP = readdir(dp)) != NULL) {
+        if (dirP->d_type == DT_REG) {
+            files.push_back(path + string("/") + string(dirP->d_name));
+        }
+    }
+
+    closedir(dp);
+    return files;
+}
+
 string cao::os::join(char *path, string filename) {
     // path maybe /home/jin/doc1 or /home/jin/doc1/
     // make sure drop the last '/'
