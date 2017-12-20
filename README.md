@@ -1,7 +1,8 @@
-# cao
+![](http://wx4.sinaimg.cn/large/006fVPCvly1fmn2sdxspkj30zm0go7n8.jpg)
 
-> **cao** is a C++ library contains various Python like APIs. It named as Cpp Assist Oar. Which means it's like the paddle helps you boating in C++. Mostly **cao** is just do the things like boost, but it is litter and simpler, and more clear
-> to use.
+# cao [![Travis Status](https://travis-ci.org/davisking/dlib.svg?branch=master)](https://travis-ci.org/davisking/dlib)
+
+> **cao** is a C++ library contains various Python like APIs. It named as Cpp Assist Oar. Which means it's like the paddle helps you boating in C++. Mostly **cao** is just do the things **like boost**, but it is *more python-like* and *simpler*, and more clear to use.
 
 ## Installation
 
@@ -38,9 +39,7 @@ if (CAO_FOUND)
     message(STATUS "[cao] we just found cao library")
 endif ()
 
-
 set(BUILD_SHARED_LIBS OFF)
-
 target_link_libraries(main ${CAO_LIBS})
 ```
 
@@ -70,6 +69,8 @@ int main() {
 ```
 
 Tada!! you just find a very tiny and easy-to-use assist APIs of C++!!
+
+
 
 ## Copyright
 
