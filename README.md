@@ -1,7 +1,7 @@
 # cao
 
 > **cao** is a C++ library contains various Python like APIs. It named as Cpp Assist Oar. Which means it's like the paddle helps you boating in C++. Mostly **cao** is just do the things like boost, but it is litter and simpler, and more clear
-to use.
+> to use.
 
 ## Installation
 
@@ -32,12 +32,16 @@ before using **cao**, you should find library in CMakeLists first:
 
 ```$xslt
 # this is path to found cao library
-link_directories("/usr/local/include/cao")
-find_library(CAO_LIBRARY
-        NAMES libcao cao
-        HINTS "${CMAKE_PREFIX_PATH}/lib"
-        )
+find_package( PkgConfig )
+pkg_check_modules( CAO REQUIRED cao )
+if (CAO_FOUND)
+    message(STATUS "[cao] we just found cao library")
+endif ()
+
+
 set(BUILD_SHARED_LIBS OFF)
+
+target_link_libraries(main ${CAO_LIBS})
 ```
 
 above is the standard way to found **cao** from your system. 
